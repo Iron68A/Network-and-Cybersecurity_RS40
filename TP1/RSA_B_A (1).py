@@ -19,7 +19,13 @@ import hashlib
 import binascii
 
 def home_mod_expnoent(x,y,n): #exponentiation modulaire
+    """
+    param x: base
+    param y: exposant
+    param n: modulo
 
+    return: L'expoentiation modulaire de x^y modulo n
+    """
     R1 = 1
     R2 = x
     while(y>0):
