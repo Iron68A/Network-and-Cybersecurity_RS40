@@ -35,7 +35,7 @@ def home_pgcd(a,b): #recherche du pgcd
         return home_pgcd(b,a%b)
 
 def euclide_etendu(a, b):
-    return recursive_euclide_etendu(a, b)[2]
+    return recursive_euclide_etendu(a, b)[2]        
 
 def recursive_euclide_etendu(a, b):
     if b == 0:
@@ -43,6 +43,30 @@ def recursive_euclide_etendu(a, b):
     else:
         d, u, v = recursive_euclide_etendu(b, a % b)
         return (d, v, u - (a // b) * v)
+
+def euclide_etenduv2(a,b):
+    """
+    param a: un nbr entier
+    param b: un autre nombre entier
+
+    return: la clé secrete d
+    """
+    save_a=a
+    quotient=a//b
+    reste=a%b
+    i=0
+    v=[0,1] #v0=0 et v1=1 , variables par défaut pour le calcul de la relation de bezout 
+    while reste!=0:
+        i=i+1
+        if i>=1:
+            v.append(v[i-1]-quotient*v[i])
+        a=b
+        b=reste
+        quotient=a//b
+        reste=a%b
+    
+    return v[-1]%save_a
+
 
 
 k=10
@@ -66,4 +90,5 @@ def home_bourrage(msgblock): #pour bourrer les blocs de 10 caractères
         msgblock[msgblock.index(msg)]=n_msg
     return msgblock
 
-print(home_bourrage(home_create_block("Bonjour je suis une patate")))
+#print(home_bourrage(home_create_block("Bonjour je suis une patate")))
+print(euclide_etenduv2(59,17))

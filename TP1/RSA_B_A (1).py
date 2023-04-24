@@ -28,15 +28,13 @@ def home_mod_expnoent(x,y,n): #exponentiation modulaire
     """
     R1 = 1
     R2 = x
-    while(y>0):
-        if (y%2==1):
-            R1 = R1*R2
+    while(y>0):           #tant que y est positif
+        if (y%2==1):        #si le bit est à 1
+            R1 = R1*R2      
             R1 = R1%n
-            #print("R1 = ", R1)
         R2 = R2*R2
         R2 = R2%n
-        #print("R2 = ", R2)
-        y = y//2
+        y = y//2        #on décale d'un bit
     return R1
 
 def in_to_bin(x): #transformer un entier en binaire
@@ -46,16 +44,28 @@ def in_to_bin(x): #transformer un entier en binaire
         return x%2+10*in_to_bin(x//2)
 
 
+def home_ext_euclide(a, b):  #recherche du pgcd et de la clé secrète via l'algorithme d'euclide étendu
+    """
+    param a: un nbr entier
+    param b: un autre nombre entier
 
-def home_ext_euclide(a, b): 
-    return recursive_home_ext_euclide(a, b)[2]%a #a Refaire 
-
-def recursive_home_ext_euclide(a, b):
-    if b == 0:
-        return (a, 1, 0)
-    else:
-        d, u, v = recursive_home_ext_euclide(b, a % b)
-        return (d, v, u - (a // b) * v)
+    return: la clé secrete d
+    """
+    save_a=a                    #sauvegarde de a pour le calcul de la clé secrète
+    quotient=a//b               #quotient et reste pour le calcul du pgcd
+    reste=a%b
+    i=0
+    v=[0,1] #v0=0 et v1=1 , variables par défaut pour le calcul de la relation de bezout 
+    while reste!=0:
+        i=i+1
+        if i>=1:
+            v.append(v[i-1]-quotient*v[i])          #calcul de la relation de bezout v
+        a=b
+        b=reste
+        quotient=a//b
+        reste=a%b                       
+    
+    return v[-1]%save_a             #retourne la clé secrète d (valeur de v pour le dernier reste non nul modulo a)
 
 def home_pgcd(a,b): #recherche du pgcd
     if(b==0): 
