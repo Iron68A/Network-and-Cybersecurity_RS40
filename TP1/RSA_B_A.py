@@ -2,18 +2,11 @@
 """
 Created on Fri Apr 17 13:44:40 2020
 
-@author: Mr ABBAS-TURKI
+@author: Mr ABBAS-TURKI,
+@modified by: Mr BARTHELME Alexandre,
 """
+#Fichier RSA_B_A.py , utilise SHA 256 et l'exponentiation modulaire pour le chiffrement et le déchiffrement
 
-#info diverses cours : 
-#MD5-> sha 256
-# taile message > taille clé -> erreur
-# refaire les clefs x1 x2 a et b, utilisé ea =17 et eb = 23
-#utiliser Bigprimes.org avec Nofbits = 4 NbDigits =60-100
-#e = 65537
-
-#taille limité a 10 car p*q < 2^64 (8 octets) , les trop petites pour SHA256 (pour message > 10 caractères)
-#nouvel limite avec sha256, en fonction taille clé, taille message a tester 
 
 import hashlib
 import binascii

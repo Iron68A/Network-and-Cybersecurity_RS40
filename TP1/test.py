@@ -1,3 +1,11 @@
+"""
+@file test.py, utiliser uniquement pour les tests, ne pas utiliser dans les autres fichiers, ne pas le prendre en compte
+
+@Author: Mr  BARTHELME Alexandre
+
+"""
+
+
 
 
 import binascii
