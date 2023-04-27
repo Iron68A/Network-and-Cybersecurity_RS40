@@ -2,32 +2,50 @@
 """
 Created on Fri Apr 17 13:44:40 2020
 
-@author: Mr ABBAS-TURKI,
+@author: Mr ABBAS-TURKI
 @modified by: Mr BARTHELME Alexandre,
 """
-#Fichier RSA_B_A.py , utilise SHA 256 et l'exponentiation modulaire pour le chiffrement et le déchiffrement
 
+#Fichier RSACRTChinois.py , utilise SHA 256 et le théorème chinois pour le déchiffrement
 
 import hashlib
 import binascii
 
-def home_mod_expnoent(x,y,n): #exponentiation modulaire
+def home_crt(p,q,msgc,nmod,d): #Théorème reste chinois
     """
-    param x: base
-    param y: exposant
-    param n: modulo
+    param p : nbr premiers defini (x1a)
+    param q : nbr premiers defini (x2a)
+    param msgc : message crypté
+    param nmod : n modulaire
+    param d : exposant de la clé (d)
 
-    return: L'expoentiation modulaire de x^y modulo n
+    return : message décrypté
     """
-    R1 = 1
+
+    if (p>q) :          #on s'assure que p est le plus petit nombre premier
+        p,q = q,p
+
+    dp= d%(p-1)             #calcul des exposants dp et dq
+    dq= d%(q-1)
+    q1= home_ext_euclide(q,p)       #calcul de q1
+    mp= home_mod_expnoent(msgc,dp,p)   #calcul de mp et mq
+    mq= home_mod_expnoent(msgc,dq,q)
+    h= (q1*(mp-mq))%p          #calcul de h
+    m= (mq+h*q)%nmod          #calcul du message décrypté m
+
+    return m   
+
+def home_mod_expnoent(x,y,n): #exponentiation modulaire
+
+    R1 = 1              #initialisation des variables
     R2 = x
-    while(y>0):           #tant que y est positif
+    while(y>0):             #tant que y est positif
         if (y%2==1):        #si le bit est à 1
-            R1 = R1*R2      
+            R1 = R1*R2
             R1 = R1%n
-        R2 = R2*R2
+        R2 = R2*R2         #on décale d'un bit
         R2 = R2%n
-        y = y//2        #on décale d'un bit
+        y = y//2 #division entière de y par 2
     return R1
 
 def in_to_bin(x): #transformer un entier en binaire
@@ -84,10 +102,10 @@ def home_int_to_string(x): # pour transformer un int en string
 
 
 def mot10char(): #entrer le secret
-    secret=input("donner un secret de 10 caractères au maximum : ")
+    secret=input("donner un secret de 82 caractères au maximum : ")
     
-    #while (len(secret)>11)
-     #   secret=input("c'est beaucoup trop long, 10 caractères S.V.P : ")
+    while (len(secret)>82):
+       secret=input("c'est beaucoup trop long, 82 caractères S.V.P : ")
     return(secret)
     
 
@@ -156,7 +174,7 @@ print("*******************************************************************")
 x=input("appuyer sur entrer")
 print("*******************************************************************")
 print("Alice déchiffre le message chiffré \n",chif,"\nce qui donne ")
-dechif=home_int_to_string(home_mod_expnoent(chif, da, na))
+dechif=home_int_to_string(home_crt(x1a,x2a,chif,na,da))
 print(dechif)
 print("*******************************************************************")
 print("Alice déchiffre la signature de Bob \n",signe,"\n ce qui donne  en décimal")

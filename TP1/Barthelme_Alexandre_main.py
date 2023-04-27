@@ -2,63 +2,32 @@
 """
 Created on Fri Apr 17 13:44:40 2020
 
-@author: Mr ABBAS-TURKI
+@author: Mr ABBAS-TURKI,
+@modified by: Mr BARTHELME Alexandre,
 """
+#Fichier RSA_B_A.py , utilise SHA 256 et l'exponentiation modulaire pour le chiffrement et le déchiffrement
 
-#FIchier RSA_B_A bloc.py , utilise SHA 256 et le découpage en blocs (+ bourrage) pour le déchiffrement et le chiffrement
 
 import hashlib
 import binascii
-import random
-
-random.seed()
-
-k= 10
-
-def home_create_block(msg): #pour créer les blocs de 10 caractères
-    j= k//2
-    i=0
-    msgblock=[]
-    while (i<len(msg)):
-        msgblock.append(msg[i:i+j])
-        i=i+j
-    return msgblock
-
-def home_bourrage(msgblock): #pour bourrer les blocs de 10 caractères
-    for msg in msgblock:
-
-        alea=''
-        for i in range(k-len(msg)-3):
-            alea=alea+chr(random.randint(0,255))
-
-        n_msg= chr(0)+chr(2)+alea+chr(0)+msg
-        msgblock[msgblock.index(msg)]=n_msg
-    
-    return msgblock
-
-def home_deblock(msgblock): #pour débourrer les blocs de 10 caractères
-
-    for msg in msgblock:
-        for i in range(len(msg),0,-1):
-            if msg[i-1]==chr(0):
-                msgblock[msgblock.index(msg)]=msg[i:]
-                break
-    return ''.join(msgblock)
-
 
 def home_mod_expnoent(x,y,n): #exponentiation modulaire
+    """
+    param x: base
+    param y: exposant
+    param n: modulo
 
+    return: L'expoentiation modulaire de x^y modulo n
+    """
     R1 = 1
     R2 = x
-    while(y>0):
-        if (y%2==1):
-            R1 = R1*R2
+    while(y>0):           #tant que y est positif
+        if (y%2==1):        #si le bit est à 1
+            R1 = R1*R2      
             R1 = R1%n
-            #print("R1 = ", R1)
         R2 = R2*R2
         R2 = R2%n
-        #print("R2 = ", R2)
-        y = y//2
+        y = y//2        #on décale d'un bit
     return R1
 
 def in_to_bin(x): #transformer un entier en binaire
@@ -68,16 +37,28 @@ def in_to_bin(x): #transformer un entier en binaire
         return x%2+10*in_to_bin(x//2)
 
 
+def home_ext_euclide(a, b):  #recherche du pgcd et de la clé secrète via l'algorithme d'euclide étendu
+    """
+    param a: un nbr entier
+    param b: un autre nombre entier
 
-def home_ext_euclide(a, b): 
-    return recursive_home_ext_euclide(a, b)[2]%a #a Refaire 
-
-def recursive_home_ext_euclide(a, b):
-    if b == 0:
-        return (a, 1, 0)
-    else:
-        d, u, v = recursive_home_ext_euclide(b, a % b)
-        return (d, v, u - (a // b) * v)
+    return: la clé secrete d
+    """
+    save_a=a                    #sauvegarde de a pour le calcul de la clé secrète
+    quotient=a//b               #quotient et reste pour le calcul du pgcd
+    reste=a%b
+    i=0
+    v=[0,1] #v0=0 et v1=1 , variables par défaut pour le calcul de la relation de bezout 
+    while reste!=0:
+        i=i+1
+        if i>=1:
+            v.append(v[i-1]-quotient*v[i])          #calcul de la relation de bezout v
+        a=b
+        b=reste
+        quotient=a//b
+        reste=a%b                       
+    
+    return v[-1]%save_a             #retourne la clé secrète d (valeur de v pour le dernier reste non nul modulo a)
 
 def home_pgcd(a,b): #recherche du pgcd
     if(b==0): 
@@ -111,8 +92,8 @@ def mot10char(): #entrer le secret
     
 
 #voici les éléments de la clé d'Alice
-#x1a=2010942103422233250095259520183 #p
-#x2a=3503815992030544427564583819137 #q
+#x1a=2010942103422233250095259520183 #p Ancien
+#x2a=3503815992030544427564583819137 #q Ancien
 x1a=1063805098442660534749185384263601416082561751934318929114851809197247605578631913330241394071235709 #p
 x2a=1982654118651898562310578873218402649336095562797128997417129319500916716306425513658404434814312487 #q
 na=x1a*x2a  #n
@@ -120,8 +101,8 @@ phia=((x1a-1)*(x2a-1))//home_pgcd(x1a-1,x2a-1)
 ea=17 #exposant public
 da=home_ext_euclide(phia,ea) #exposant privé
 #voici les éléments de la clé de bob
-#x1b=9434659759111223227678316435911 #p
-#x2b=8842546075387759637728590482297 #q
+#x1b=9434659759111223227678316435911 #p Ancien
+#x2b=8842546075387759637728590482297 #q Ancien 
 x1b=5396702109491801272042044631715247535808482875789666925238961828776776546780520690329977111997820959 #p
 x2b=3163816943287154840448938988625767561279146987788414290109785763737929280845468284502267076973439393 #q
 
@@ -149,18 +130,10 @@ x=input("appuyer sur entrer")
 secret=mot10char()
 print("*******************************************************************")
 print("voici la version en nombre décimal de ",secret," : ")
-
-block = home_bourrage(home_create_block(secret))
-
-num_sec=[]
-for msg in block:
-    num_sec.append(home_string_to_int(msg))
+num_sec=home_string_to_int(secret)
 print(num_sec)
 print("voici le message chiffré avec la publique d'Alice : ")
-
-chif=[]
-for a_num_sec in num_sec:
-    chif.append(home_mod_expnoent(a_num_sec, ea, na))
+chif=home_mod_expnoent(num_sec, ea, na)
 print(chif)
 print("*******************************************************************")
 print("On utilise la fonction de hashage sha256 pour obtenir le hash du message",secret)
@@ -183,16 +156,9 @@ print("*******************************************************************")
 x=input("appuyer sur entrer")
 print("*******************************************************************")
 print("Alice déchiffre le message chiffré \n",chif,"\nce qui donne ")
-dechif=[]
-for a_chif in chif:
-    dechif.append(home_int_to_string(home_mod_expnoent(a_chif, da, na)))
+dechif=home_int_to_string(home_mod_expnoent(chif, da, na))
 print(dechif)
 print("*******************************************************************")
-
-dechif=home_deblock(dechif)
-print("Alice débloque le message \n",dechif)
-print("*******************************************************************")
-
 print("Alice déchiffre la signature de Bob \n",signe,"\n ce qui donne  en décimal")
 designe=home_mod_expnoent(signe, eb, nb)
 print(designe)
