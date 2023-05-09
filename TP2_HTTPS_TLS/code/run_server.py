@@ -9,7 +9,7 @@ Created on May 2022
 from flask import Flask
 
 # définir le message secret
-SECRET_MESSAGE = "hypsilophodon" # A modifier
+SECRET_MESSAGE = "MDPnul" # A modifier #fait1
 app = Flask(__name__)
 
 
@@ -20,7 +20,8 @@ def get_secret_message():
 
 if __name__ == "__main__":
     # HTTP version
-    app.run(debug=True, host="0.0.0.0", port=8081)
+    #app.run(debug=True, host="0.0.0.0", port=8081)
     # HTTPS version
     # A compléter  : nécessité de déplacer les bons fichiers vers ce répertoire
-   
+    context = ("server-public-key.pem", "server-private-key.pem")
+    app.run(debug=True, host="0.0.0.0", port=8081, ssl_context=context)
