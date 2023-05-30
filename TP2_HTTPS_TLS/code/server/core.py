@@ -7,7 +7,6 @@ Created on May 2022
 """
 from tools.core import Configuration, generate_private_key, generate_csr
 
-
 class Server:
 
     def __init__(self, config: Configuration, password: str, private_key_filename: str, csr_filename: str):
